@@ -1,0 +1,32 @@
+# ---------------------------------------------------------------------------
+# HTCondor submit file: World Bank data pull
+# Target: ap40.uw.osg-htc.org (OSPool)
+# Usage:  condor_submit pull_data.submit
+# ---------------------------------------------------------------------------
+
+container_image = /cvmfs/singularity.opensciencegrid.org/opensciencegrid/osgvo-ubuntu-20.04:latest
+
+executable = pull_data.sh
+
+transfer_input_files = pull_all_indicators.py, requirements-osg.txt, ../src
+
+transfer_output_files = data
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+request_cpus   = 1
+request_memory = 4 GB
+request_disk   = 6 GB
+
++JobDurationCategory = "Short"    # ~10-20 min against the WB API
+
+max_retries = 3
+# OS is provided by container_image above; no additional host-OS requirement needed.
+
+log             = logs/pull.$(Cluster).log
+output          = logs/pull.$(Cluster).out
+error           = logs/pull.$(Cluster).err
+stream_output   = True
+stream_error    = True
+
+queue 1
